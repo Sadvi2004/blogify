@@ -11,7 +11,7 @@ const postRoutes = require('./routes/postRoutes');
 const app = express();
 connectDB();
 
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: "https://sadvi-blogify.vercel.app" }));
 app.use(express.json());
 app.use(cookieParser());
 
