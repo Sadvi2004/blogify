@@ -10,13 +10,16 @@ export default function CreatePost() {
     const [content, setContent] = useState('');
     const [files, setFiles] = useState(null);
     const [redirect, setRedirect] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     async function createNewPost(e) {
         e.preventDefault();
+        setLoading(true);
 
         const token = localStorage.getItem("jwtToken"); // Get JWT token
         if (!token) {
             alert("You need to be logged in to create a post.");
+            setLoading(false);
             return;
         }
 
@@ -29,19 +32,25 @@ export default function CreatePost() {
             data.set("file", files[0]);
         }
 
-        const res = await fetch(`${BASE_URI}/api/posts`, {
-            method: "POST",
-            body: data,
-            headers: {
-                Authorization: `Bearer ${token}`, // Send token in Authorization header
-            },
-            credentials: "include",
-        });
+        try {
+            const res = await fetch(`${BASE_URI}/api/posts`, {
+                method: "POST",
+                body: data,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                credentials: "include",
+            });
 
-        if (res.ok) {
-            setRedirect(true);
-        } else {
-            alert("Failed to create post.");
+            if (res.ok) {
+                setRedirect(true);
+            } else {
+                alert("Failed to create post.");
+            }
+        } catch (error) {
+            alert("An error occurred: " + error.message);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -79,9 +88,32 @@ export default function CreatePost() {
 
                 <button
                     type="submit"
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-all"
+                    className="mt-4 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-all flex justify-center items-center"
+                    disabled={loading}
                 >
-                    Create Post
+                    {loading ? (
+                        <div className="flex items-center">
+                            <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                    fill="none"
+                                />
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8v4l4-4-4-4v4a8 8 0 00-8 8h4z"
+                                />
+                            </svg>
+                            Creating...
+                        </div>
+                    ) : (
+                        "Create Post"
+                    )}
                 </button>
             </form>
         </div>

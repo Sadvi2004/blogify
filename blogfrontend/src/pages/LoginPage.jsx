@@ -65,7 +65,14 @@ export default function LoginPage() {
                     className="w-full py-2 border-2 rounded-md flex justify-center items-center"
                     disabled={loading}
                 >
-                    {loading ? <span className=" bg-black loader w-5 h-5 animate-spin"></span> : "Login"}
+                    {loading ? (
+                        <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                            <span className="text-black">Logging...</span>
+                        </div>
+                    ) : (
+                        "Login"
+                    )}
                 </button>
             </form>
         </div>

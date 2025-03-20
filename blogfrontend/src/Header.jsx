@@ -1,23 +1,25 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { BASE_URI } from "./config";
 
 export default function Header() {
     const { setUserInfo, userInfo } = useContext(UserContext);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
 
         if (!token) {
             setUserInfo(null);
+            setLoading(false);
             return;
         }
 
         fetch(`${BASE_URI}/api/auth/profile`, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${token}`, // ✅ Attach the token
+                Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
             credentials: "include",
@@ -30,7 +32,8 @@ export default function Header() {
                     setUserInfo(null);
                 }
             })
-            .catch(error => console.error("Error fetching user profile:", error));
+            .catch(error => console.error("Error fetching user profile:", error))
+            .finally(() => setLoading(false));
     }, [setUserInfo]);
 
     async function logout() {
@@ -40,7 +43,7 @@ export default function Header() {
                 method: 'POST',
             });
             if (response.ok) {
-                localStorage.removeItem("jwtToken"); // ✅ Remove token on logout
+                localStorage.removeItem("jwtToken");
                 setUserInfo(null);
             }
         } catch (error) {
@@ -54,7 +57,12 @@ export default function Header() {
         <header className="p-3 bg-primary flex justify-between items-center h-14 text-third shadow-md">
             <Link to="/" className="text-fourth font-bold text-xl text-secondary">Blogify</Link>
             <nav className="flex gap-4">
-                {username ? (
+                {loading ? (
+                    <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                        <span className="text-black">Loading...</span>
+                    </div>
+                ) : username ? (
                     <>
                         <Link to="/create" className="text-third py-8 text-secondary">
                             Create new post
@@ -77,7 +85,5 @@ export default function Header() {
                 )}
             </nav>
         </header>
-
-
     );
 }

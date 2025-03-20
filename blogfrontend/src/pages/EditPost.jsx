@@ -15,6 +15,7 @@ export default function EditPost() {
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
     const [redirect, setRedirect] = useState(false);
+    const [fetching, setFetching] = useState(true);
 
     // Fetch post details when component mounts
     useEffect(() => {
@@ -22,6 +23,7 @@ export default function EditPost() {
             const token = localStorage.getItem("jwtToken");
             if (!token) {
                 setError("Unauthorized! Please log in.");
+                setFetching(false);
                 return;
             }
 
@@ -32,6 +34,7 @@ export default function EditPost() {
 
                 if (response.status === 401) {
                     setError("Session expired. Please log in again.");
+                    setFetching(false);
                     return;
                 }
 
@@ -43,6 +46,8 @@ export default function EditPost() {
                 setContent(postInfo.content);
             } catch (err) {
                 setError("Error loading post data. " + err.message);
+            } finally {
+                setFetching(false);
             }
         }
         fetchPost();
@@ -116,6 +121,14 @@ export default function EditPost() {
     }
 
     if (redirect) return <Navigate to="/" />;
+
+    if (fetching) {
+        return (
+            <div className="flex justify-center items-center h-screen bg-black text-white text-2xl">
+                Loading...
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-3xl mx-auto mt-12 p-6 bg-white text-black border border-gray-300 rounded-lg shadow-lg">
