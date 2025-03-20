@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { BASE_URI } from '../config';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
     async function register(ev) {
         ev.preventDefault();
         setLoading(true);
+        setError(null);
+
         try {
             const response = await fetch(`${BASE_URI}/api/auth/register`, {
                 method: 'POST',
@@ -16,13 +20,18 @@ export default function RegisterPage() {
                 headers: { 'Content-Type': 'application/json' },
             });
 
+            const data = await response.json();
+
             if (response.status === 200) {
                 alert('Registration successful');
+                navigate('/login');
+            } else if (response.status === 409) {
+                setError('User already exists. Try a different username.');
             } else {
-                alert('Registration failed');
+                setError(data.message || 'Registration failed.');
             }
         } catch (error) {
-            alert('An error occurred', error);
+            setError('An error occurred. Please try again.', error);
         } finally {
             setLoading(false);
         }
@@ -32,6 +41,8 @@ export default function RegisterPage() {
         <div className="flex justify-center items-center h-[90vh]">
             <form onSubmit={register} className="w-96 p-6 rounded-lg border-2">
                 <h1 className="text-2xl font-bold text-third text-center mb-4">Register</h1>
+
+                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                     type="text"
@@ -51,6 +62,10 @@ export default function RegisterPage() {
                     required
                 />
 
+                <div className="text-right mb-3">
+                    <Link to="/login" className="text-gray-400">Already have an account?</Link>
+                </div>
+
                 <button
                     type="submit"
                     className='w-full py-2 border-2 rounded-md cursor-pointer flex justify-center items-center'
@@ -59,7 +74,7 @@ export default function RegisterPage() {
                     {loading ? (
                         <div className="flex items-center gap-2">
                             <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                            <span className="text-black">Pls wait..</span>
+                            <span className="text-black">Please wait..</span>
                         </div>
                     ) : (
                         "Register"

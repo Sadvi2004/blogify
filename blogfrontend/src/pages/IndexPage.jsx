@@ -24,7 +24,7 @@ export default function IndexPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-6 flex justify-center items-start">
-            <div className="max-w-4xl mx-auto">
+            <div className=" w-[90%] max-w-6xl mx-auto">
                 {loading ? (
                     <div className="flex justify-center items-center">
                         <span className="w-8 h-8 border-4 border-gray-600 border-t-transparent rounded-full animate-spin"></span>
