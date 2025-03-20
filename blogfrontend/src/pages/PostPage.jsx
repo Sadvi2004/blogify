@@ -6,16 +6,33 @@ import { BASE_URI } from "../config";
 
 export default function PostPage() {
     const [postInfo, setPostInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
     const { userInfo } = useContext(UserContext);
     const { id } = useParams();
 
     useEffect(() => {
+        setLoading(true);
         fetch(`${BASE_URI}/api/posts/${id}`)
             .then(response => response.json())
-            .then(postInfo => setPostInfo(postInfo));
+            .then(postInfo => {
+                setPostInfo(postInfo);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching post:", error);
+                setLoading(false);
+            });
     }, [id]);
 
-    if (!postInfo) return '';
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+            </div>
+        );
+    }
+
+    if (!postInfo) return <p className="text-center text-gray-500 mt-10">Post not found.</p>;
 
     return (
         <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">

@@ -6,13 +6,11 @@ export default function RegisterPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
     const navigate = useNavigate();
+
     async function register(ev) {
         ev.preventDefault();
         setLoading(true);
-        setError(null);
-
         try {
             const response = await fetch(`${BASE_URI}/api/auth/register`, {
                 method: 'POST',
@@ -20,18 +18,14 @@ export default function RegisterPage() {
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            const data = await response.json();
-
             if (response.status === 200) {
                 alert('Registration successful');
                 navigate('/login');
-            } else if (response.status === 409) {
-                setError('User already exists. Try a different username.');
             } else {
-                setError(data.message || 'Registration failed.');
+                alert('Registration failed');
             }
         } catch (error) {
-            setError('An error occurred. Please try again.', error);
+            alert('An error occurred', error);
         } finally {
             setLoading(false);
         }
@@ -41,8 +35,6 @@ export default function RegisterPage() {
         <div className="flex justify-center items-center h-[90vh]">
             <form onSubmit={register} className="w-96 p-6 rounded-lg border-2">
                 <h1 className="text-2xl font-bold text-third text-center mb-4">Register</h1>
-
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                     type="text"

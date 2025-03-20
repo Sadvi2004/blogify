@@ -3,9 +3,12 @@ import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { BASE_URI } from "./config";
 
+import { useNavigate } from "react-router-dom";
+
 export default function Header() {
     const { setUserInfo, userInfo } = useContext(UserContext);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const token = localStorage.getItem("jwtToken");
@@ -45,13 +48,12 @@ export default function Header() {
             if (response.ok) {
                 localStorage.removeItem("jwtToken");
                 setUserInfo(null);
+                navigate("/");
             }
         } catch (error) {
             console.error("Logout failed:", error);
         }
     }
-
-    const username = userInfo?.username;
 
     return (
         <header className="p-3 bg-primary flex justify-between items-center h-14 text-third shadow-md">
@@ -62,7 +64,7 @@ export default function Header() {
                         <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
                         <span className="text-black">Loading...</span>
                     </div>
-                ) : username ? (
+                ) : userInfo?.username ? (
                     <>
                         <Link to="/create" className="text-third py-8 text-secondary">
                             Create new post
@@ -70,7 +72,7 @@ export default function Header() {
                         <button
                             onClick={logout}
                             className="text-secondary py-8 cursor-pointer">
-                            Logout ({username})
+                            Logout ({userInfo.username})
                         </button>
                     </>
                 ) : (

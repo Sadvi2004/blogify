@@ -14,6 +14,7 @@ export default function EditPost() {
     const [error, setError] = useState('');
     const [showPopup, setShowPopup] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState(false); // State for delete loading animation
     const [redirect, setRedirect] = useState(false);
     const [fetching, setFetching] = useState(true);
 
@@ -95,9 +96,12 @@ export default function EditPost() {
 
     // Function to delete the post
     async function deletePost() {
+        setDeleting(true); // Show "Deleting..." state
+
         const token = localStorage.getItem("jwtToken");
         if (!token) {
             setError("Unauthorized! Please log in.");
+            setDeleting(false);
             return;
         }
 
@@ -117,6 +121,9 @@ export default function EditPost() {
             setRedirect(true);
         } catch (err) {
             setError("Deletion failed! " + err.message);
+        } finally {
+            setDeleting(false);
+            setShowPopup(false);
         }
     }
 
@@ -170,8 +177,9 @@ export default function EditPost() {
                         type="button"
                         className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg"
                         onClick={() => setShowPopup(true)}
+                        disabled={deleting}
                     >
-                        Delete Post
+                        {deleting ? "Deleting..." : "Delete Post"}
                     </button>
                 </div>
             </form>
@@ -186,14 +194,16 @@ export default function EditPost() {
                             <button
                                 onClick={() => setShowPopup(false)}
                                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                                disabled={deleting}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={deletePost}
                                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                disabled={deleting}
                             >
-                                Delete
+                                {deleting ? "Deleting..." : "Delete"}
                             </button>
                         </div>
                     </div>

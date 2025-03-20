@@ -16,7 +16,7 @@ export default function CreatePost() {
         e.preventDefault();
         setLoading(true);
 
-        const token = localStorage.getItem("jwtToken"); // Get JWT token
+        const token = localStorage.getItem("jwtToken");
         if (!token) {
             alert("You need to be logged in to create a post.");
             setLoading(false);
@@ -91,29 +91,7 @@ export default function CreatePost() {
                     className="mt-4 bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-all flex justify-center items-center"
                     disabled={loading}
                 >
-                    {loading ? (
-                        <div className="flex items-center">
-                            <svg className="animate-spin h-5 w-5 mr-2 text-white" viewBox="0 0 24 24">
-                                <circle
-                                    className="opacity-25"
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="currentColor"
-                                    strokeWidth="4"
-                                    fill="none"
-                                />
-                                <path
-                                    className="opacity-75"
-                                    fill="currentColor"
-                                    d="M4 12a8 8 0 018-8v4l4-4-4-4v4a8 8 0 00-8 8h4z"
-                                />
-                            </svg>
-                            Creating...
-                        </div>
-                    ) : (
-                        "Create Post"
-                    )}
+                    {loading ? "Creating..." : "Create Post"}
                 </button>
             </form>
         </div>
